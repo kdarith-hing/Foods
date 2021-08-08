@@ -33,24 +33,42 @@ def lookup(barcode):
     name = raw_name.text.strip()
     print(f"Product: {name}")
 
-    # search for fat contents
-    result = soup.find(id='nutriment_fat_tr')
+    # list of ids for nutritional types lookup
+    type_list = [
+        ['nutriment_fat_tr', 'fat'],
+        ['nutriment_cholesterol_tr', 'cholesterol'],
+        ['nutriment_salt_tr', 'salt'],
+        ['nutriment_sodium_tr', 'sodium'],
+        ['nutriment_carbohydrates_tr', 'carbohydrates'],
+        ['nutriment_fiber_tr', 'fiber'],
+        ['nutriment_sugars_tr', 'sugars'],
+        ['nutriment_proteins_tr', 'proteins']
+    ]
 
-    # search for values within fat contents
-    inner_result = result.find_all(class_="nutriment_value")
+    # iterate over all given contents
+    for item in type_list:
+        # search for given content
+        result = soup.find(id=item[0])
 
-    # iterate over all values and insert into list initalized with type in 0 place.
-    # format [type, 100g value, serving value, extra info...]
-    nutrition_list = ['fat']
-    for nutriment_value in inner_result:
-        nutrition_list.append(nutriment_value.text.strip())
+        # search for values within content
+        inner_result = result.find_all(class_="nutriment_value")
 
-    # grab necessary values
-    nutri_type = nutrition_list[0]
-    nutri_100g = nutrition_list[1]
-    nutri_ss = nutrition_list[2]
+        # iterate over all values and insert into list initalized with type in 0 place.
+        # format [type, 100g value, serving value, extra info...]
+        nutrition_list = []
+        nutrition_list.append(item[1])
+        for nutriment_value in inner_result:
+            nutrition_list.append(nutriment_value.text.strip())
 
-    print(f"Type: {nutri_type}")
-    print(f"Serving Size: {nutri_ss}")
-    print(f"100g: {nutri_100g}")
+        # see everything returned
+        #print(nutrition_list)
+
+        # grab necessary values
+        nutri_type = nutrition_list[0]
+        nutri_100g = nutrition_list[1]
+        nutri_ss = nutrition_list[2]
+
+        print(f"Type: {nutri_type}")
+        print(f"\tServing Size: {nutri_ss}")
+        print(f"\t100g: {nutri_100g}")
 
